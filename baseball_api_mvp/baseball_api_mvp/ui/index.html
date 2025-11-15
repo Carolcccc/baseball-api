@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Baseball MVP — Interactive</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#94a3b8; --accent:#f97316; --accent-2:#06b6d4; --panel:#071029;
+      --glass: rgba(255,255,255,0.03);
+    }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#071028 0%, #07112a 100%);font-family:Nunito,Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial;color:#e6eef6}
+    .container{max-width:980px;margin:36px auto;padding:20px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:20px;box-shadow:0 6px 30px rgba(2,6,23,0.6)}
+    h1{margin:0 0 10px;font-size:20px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .form label{display:block;font-size:13px;color:var(--muted);margin-top:10px}
+    .form input{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:var(--panel);color:inherit}
+    .actions{margin-top:14px;display:flex;gap:8px}
+    button{background:linear-gradient(90deg,var(--accent),var(--accent-2));border:none;color:white;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+    .result{background:var(--glass);padding:14px;border-radius:10px}
+    .prob{display:flex;align-items:center;gap:12px;margin-top:8px}
+    .bar{flex:1;height:12px;background:rgba(255,255,255,0.06);border-radius:8px;overflow:hidden}
+    .bar > i{display:block;height:100%;background:linear-gradient(90deg,#10b981,#06b6d4);border-radius:8px}
+    .meta{font-size:13px;color:var(--muted)}
+    pre.json{background:transparent;color:var(--muted);font-size:12px;overflow:auto;margin-top:12px}
+  .spinner{width:18px;height:18px;border-radius:50%;border:3px solid rgba(255,255,255,0.08);border-top-color:var(--accent);animation:spin 1s linear infinite;display:inline-block}
+  /* Runner and base visuals */
+  .runner-icon{transition:transform 220ms ease, opacity 220ms ease}
+  .runner{fill:transparent;stroke:none;transition:transform 220ms ease, fill 220ms ease}
+  .runner.on{fill:#f97316}
+  .runner.pulse{animation:pulse 700ms ease-out}
+  @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.28)}100%{transform:scale(1)}}
+  .runner.pop{animation:pop 420ms ease-out}
+  @keyframes pop{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.08)}100%{transform:translateY(0) scale(1)}}
+  .base-label{font-size:11px;fill:rgba(230,238,246,0.9);font-weight:700}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* Field / runner styles */
+    #field svg {display:block}
+    #field svg circle {transition: transform 260ms ease, fill 180ms ease, r 160ms ease}
+    #field svg circle.runner-on {transform-origin: center; transform: scale(1.35); filter: drop-shadow(0 6px 10px rgba(249,115,22,0.18))}
+    @keyframes runnerPulse {0%{transform:scale(1)}50%{transform:scale(1.25)}100%{transform:scale(1)}}
+    #field svg circle.runner-pulse{animation: runnerPulse 600ms ease-in-out}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <h1>Baseball MVP — Interactive</h1>
+          <div class="meta">Enter a matchup to get an immediate probability and quick insights</div>
+        </div>
+        <div class="meta">Local mode • <small id="modelStatus">model: unknown</small></div>
+      </div>
+
+  <div class="grid" style="margin-top:18px">
+        <div class="form">
+          <label>Game ID
+            <input id="game_id" value="G20251103A" />
+          </label>
+          <label>Inning
+            <input id="inning" type="number" value="5" />
+          </label>
+          <label>Outs
+            <input id="outs" type="number" value="1" />
+          </label>
+          <label>Bases (comma separated)
+            <input id="bases" value="1,0,0" />
+          </label>
+          <label>Batter ID
+            <input id="batter_id" value="444482" />
+          </label>
+          <label>Pitcher ID
+            <input id="pitcher_id" value="445926" />
+          </label>
+
+          <div class="actions">
+            <button id="predict">Get prediction</button>
+            <button id="example" class="secondary">Load example</button>
+            <div style="flex:1"></div>
+            <button id="reset" class="secondary">Reset</button>
+          <div>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <div id="field" style="width:200px;flex-shrink:0"></div>
+              <div class="result" style="flex:1">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div id="field" style="width:200px;flex-shrink:0"></div>
+            <div class="result" style="flex:1">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div><strong>Prediction</strong></div>
+              <div id="loading" style="display:none"><span class="spinner"></span> <small class="meta">Loading</small></div>
+            </div>
+
+            <div id="probs" style="margin-top:12px">
+              <div class="prob"><div style="width:110px">Hit</div><div class="bar"><i id="hitBar" style="width:0%"></i></div><div id="hitPct" style="width:60px;text-align:right"></div></div>
+              <div class="prob"><div style="width:110px">K</div><div class="bar"><i id="kBar" style="width:0%"></i></div><div id="kPct" style="width:60px;text-align:right"></div></div>
+              <div class="prob"><div style="width:110px">Walk</div><div class="bar"><i id="wBar" style="width:0%"></i></div><div id="wPct" style="width:60px;text-align:right"></div></div>
+            </div>
+
+            <div id="insights" class="meta" style="margin-top:10px">No insights yet</div>
+            <pre id="jsonOut" class="json">{}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

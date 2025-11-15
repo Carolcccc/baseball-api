@@ -1,0 +1,7 @@
+batter_pa_season
+batter_hits_season
+batter_hit_rate_season
+pitcher_pa_season
+pitcher_hits_season
+pitcher_avg_velo_7d
+pitcher_hit_rate_season
