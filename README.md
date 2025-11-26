@@ -36,7 +36,7 @@ This project implements a complete end-to-end machine learning pipeline for base
 
 ## Project Structure
 
-```
+\`\`\`
 baseball_api_mvp/
 ├── README.md                    # Project documentation
 ├── requirements.txt             # Python dependencies
@@ -54,29 +54,29 @@ baseball_api_mvp/
 │   └── train_baseline.py      # XGBoost baseline trainer
 └── tests/                      # Test suite
     └── test_api.py            # API integration tests
-```
+\`\`\`
 
 ## Quick Start (macOS / zsh)
 
 ### 1) Create and activate a virtual environment:
 
-```bash
+\`\`\`bash
 python3 -m venv .venv
 source .venv/bin/activate
-```
+\`\`\`
 
 ### 2) Install dependencies and run tests:
 
-```bash
+\`\`\`bash
 pip install -r baseball_api_mvp/requirements.txt
 pytest -q
-```
+\`\`\`
 
 ### 3) Run the API locally:
 
-```bash
+\`\`\`bash
 uvicorn baseball_api_mvp.app.main:app --reload --port 8000
-```
+\`\`\`
 
 ### 4) Access the interactive UI:
 
@@ -89,10 +89,10 @@ Open your browser and navigate to:
 
 ### Predict Matchup Endpoint
 
-**POST** `/predict/matchup`
+**POST** \`/predict/matchup\`
 
 Request body:
-```json
+\`\`\`json
 {
   "game_id": "G20251103A",
   "inning": 5,
@@ -101,10 +101,10 @@ Request body:
   "batter_id": "444482",
   "pitcher_id": "445926"
 }
-```
+\`\`\`
 
 Response:
-```json
+\`\`\`json
 {
   "hit_prob": 0.285,
   "k_prob": 0.187,
@@ -118,7 +118,7 @@ Response:
     "tendency": "Works inside on lefties"
   }
 }
-```
+\`\`\`
 
 ## Technical Stack
 
@@ -131,15 +131,15 @@ Response:
 ## Model Training
 
 Train a new baseline model:
-```bash
+\`\`\`bash
 python baseball_api_mvp/train/train_baseline.py
-```
+\`\`\`
 
 The training script:
 - Loads smoothed per-role aggregate features
 - Samples data for memory efficiency
 - Trains an XGBoost classifier with ROC-AUC optimization
-- Saves model artifact to `models/baseline_xgb.joblib`
+- Saves model artifact to \`models/baseline_xgb.joblib\`
 
 ## Future Enhancements
 
@@ -153,6 +153,6 @@ The training script:
 ## Notes
 
 - This project uses a **mock predictor** by default for demo purposes
-- Replace with trained model by ensuring `models/baseline_xgb.joblib` exists
+- Replace with trained model by ensuring \`models/baseline_xgb.joblib\` exists
 - Model preloading happens at app startup to avoid first-request latency
-- Large data files (>100MB) are excluded via `.gitignore` due to GitHub limits
+- Large data files (>100MB) are excluded via \`.gitignore\` due to GitHub limits
