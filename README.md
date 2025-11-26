@@ -1,4 +1,4 @@
-Baseball MVP API (scaffold)
+Baseball API (scaffold)
 
 This is a minimal scaffold for an interactive baseball prediction API (MVP).
 
